@@ -12,8 +12,8 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.300
         persist-credentials: false
+        dotnet-version: 3.1.300
     - name: Publish with dotnet
       run: dotnet publish --configuration Release --output build
     - name: Deploy to Github Pages
