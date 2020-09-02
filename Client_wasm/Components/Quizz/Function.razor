@@ -1,0 +1,80 @@
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+@inject UserModel loggined_user
+@inject QuizzModel quizz
+@inject NavigationManager NavigationManager
+@inject HttpClient client
+
+
+<link rel="stylesheet" href="http://localhost:6001/Quizz/wait.css">
+
+
+@if (! wait)
+{
+    <div class="container">
+        <form action="/QuizzResults" method="GET" style="margin-bottom: 4rem;">
+            @if (IsCompleted) 
+            {
+                @foreach (QuizzModel quizz in MultipleChoiceQuestions)
+                {
+                    <MultipleChoiceQuizzOneCheck QuizzQuestion="@quizz"> </MultipleChoiceQuizzOneCheck>
+                }
+            }
+            <button class="btn btn-success" @onclick="@EndQuizz"> Submit </button>
+        </form> 
+    </div>
+}
+else if (wait)
+{
+    <div class="loader" style="justify-content: center; align-items: center; margin-top: 20%; margin-left: 25%; margin-right: auto; color: red;">
+        Loading...
+    </div>
+}
+else
+{
+    <meta http-equiv="refresh" content="4;URL=/signin">
+}
+
+
+
+
+
+@code
+{
+    public bool wait {get; set;} = false;
+    public string BaseURL {get; set;} = "http://localhost:6001/api/quizz";
+    List<QuizzModel> MultipleChoiceQuestions {get; set;} = new List<QuizzModel>();
+    int plus {get; set;} = 10;
+    public bool IsCompleted {get; set;} = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        MultipleChoiceQuestions = await client.GetJsonAsync<List<QuizzModel>>($"{BaseURL}/{quizz.Name.ToLower()}/multiplechoice");
+        await LocalStorage.SetItem<List<QuizzModel>>("quizz", MultipleChoiceQuestions);
+        IsCompleted = true;
+        StateHasChanged();
+    }
+
+    string url {get; set;} = @"http://localhost:6001/api/quizz/EndQuizz";
+    public async Task EndQuizz()
+    {
+        wait = true;
+        Task<List<QuizzModel>> MultipleChoiceQuestions = LocalStorage.GetItem<List<QuizzModel>>("quizz").AsTask();
+        await MultipleChoiceQuestions.ContinueWith(t =>
+            {
+                plus = MultipleChoiceQuestions
+                        .Result
+                        .Select(e => (e.AnswerIndex.Split('#', StringSplitOptions.RemoveEmptyEntries), 
+                                        e.UserAnswerIndex.Split('#', StringSplitOptions.RemoveEmptyEntries),
+                                        e.Score))
+                        .Where(e => e.Item1.SequenceEqual(e.Item2))
+                        .Select(e => e.Score)
+                        .Sum();
+                loggined_user.Score += (plus + 100 );
+                loggined_user.Scores += $"#{loggined_user.Score}#";
+                LocalStorage.SetItem<UserModel>("token", loggined_user);
+                client.PostAsJsonAsync<UserModel>(url, loggined_user);
+                NavigationManager.NavigateTo("/QuizzResults");
+            });
+    }
+}

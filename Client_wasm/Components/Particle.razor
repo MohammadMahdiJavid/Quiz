@@ -1,0 +1,19 @@
+@page "/particle"
+
+<link rel="stylesheet" href="http://localhost:6001/Style/Particle/style.css">
+
+<div id="particles-js">
+
+</div>
+
+<script type="@type" suppress-error="BL9992" src="@particleurl"></script>
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Style/Particle/app.js"></script>
+
+@code
+{
+    [Parameter]
+    public string type { get; set; } = "text/javascript";
+
+    [Parameter]
+    public string particleurl {get; set;} = @"http://localhost:6001/Style/Particle/particles.js";
+}

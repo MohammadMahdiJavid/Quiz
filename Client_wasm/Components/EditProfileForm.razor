@@ -1,0 +1,91 @@
+@page "/EditProfileForm"
+
+@inject NavigationManager NavigationManager
+@inject HttpClient client
+@inject UserModel loggined_user
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+
+
+
+<link rel="stylesheet" href="https://mdbootstrap.com/api/snippets/static/download/MDB-Pro_4.19.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://mdbootstrap.com/api/snippets/static/download/MDB-Pro_4.19.1/css/mdb.min.css">
+<link rel="stylesheet" href="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/compiled-addons-4.19.1.min.css">
+<link rel="stylesheet" type="text/css" href="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/mdb-plugins-gathered.min.css">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+@* FORM *@
+<div class="row" style="width: 100%; height: 100%; position: absolute; top: 25%; left: 0;">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-login">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <EditForm Model="@ProfUser" OnValidSubmit="@Changeprof" id="login-form" action="" method="post" role="form" style="display: block" >
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                                <div class="form-group text-center">
+                                    <div class="row" style="color: red; justify-content: center;">
+                                        <b> @ChangesMsg </b>
+                                    </div>
+                                </div>
+
+                            <div class="form-group">
+                                <InputText type="Name" name="Name" id="Name" tabindex="1" class="form-control" placeholder="Name" @bind-Value="@ProfUser.Name" />
+                            </div>
+
+                            <div class="form-group">
+                                <InputText type="LastName" name="LastName" id="LastName" tabindex="2" class="form-control" placeholder="LastName" @bind-Value="@ProfUser.LastName" />
+                            </div>
+
+                            <RadzenTextArea @bind-Value="@About" Placeholder="Enter here..." />
+
+                            <div class="form-group">
+                                <InputText type="Phone" name="Phone" id="Phone" tabindex="2" class="form-control" placeholder="Phone" @bind-Value="@ProfUser.Phone" />
+                            </div>
+
+                            <div class="form-group">
+                                <InputText type="Profession" name="Profession" id="Profession" tabindex="2" class="form-control" placeholder="Profession" @bind-Value="@ProfUser.Profession" />
+                            </div>
+
+                            <Upload>  </Upload>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6 col-sm-offset-3">
+                                        <button @onclick="@Changeprof" type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Log In">
+                                            Change Profile
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* FORM *@
+
+<script type="@type" suppress-error="BL9992" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script type="@type" suppress-error="BL9992" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+@code
+{
+    [Parameter]
+    public string type { get; set; } = "text/javascript";
+    public ProfileModel ProfUser {get; set;} = new ProfileModel();
+    public string About {get; set;}
+    public string ChangesMsg {get; set;}
+    public async Task Changeprof()
+    {
+        (loggined_user.Name, loggined_user.LastName, loggined_user.About, loggined_user.Phone, loggined_user.Profession) = (ProfUser.Name, ProfUser.LastName, About, ProfUser.Phone, ProfUser.Profession);
+        string url = @"http://localhost:6001";
+        await LocalStorage.SetItem<UserModel>("token", loggined_user);
+        HttpResponseMessage response = await client.PutAsJsonAsync<UserModel>($"{url}/api/users/update", loggined_user);
+        ChangesMsg = $"{loggined_user.Name}, \n You Have Successfuly Updated your Profile";
+        NavigationManager.NavigateTo("/profile");
+    }
+}

@@ -1,0 +1,88 @@
+@page "/Upload"
+
+@using System.IO;
+@using Tewr.Blazor.FileReader
+
+@inject IFileReaderService fileReader
+@inject HttpClient client
+@inject UserModel loggined_user
+@inject ILocalStorage LocalStorage
+
+
+<div class="form-group">
+    <input type="file" @ref="inputReference" @onchange="OpenFileAsync"/>
+    <ul>
+        <li>File Name: @fileName</li>
+        <li>Size: @size</li>
+        <li>Type: @type</li>
+    </ul>
+</div>
+<button class="btn btn-block btn-success" @onclick="UploadFileAsync" type="button" id="Upload" name="Upload" value=""> Upload File </button>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-success">
+        File has been uploaded
+    </div>
+}
+
+@if (imagePath != null)
+{
+    <img style="width:150px" src="@imagePath" />
+}
+
+
+@code
+{
+    ElementReference inputReference;
+    string message = string.Empty;
+    string imagePath = null;
+
+    string fileName = string.Empty;
+    string type = string.Empty;
+    string size = string.Empty;
+
+    Stream fileStream = null;
+
+    async Task OpenFileAsync()
+    {
+        // Read the files
+        var file = (await fileReader.CreateReference(inputReference).EnumerateFilesAsync()).FirstOrDefault();
+        if (file == null)
+            return;
+
+        // Get the info of that files 
+        var fileInfo = await file.ReadFileInfoAsync();
+        fileName = fileInfo.Name;
+        size = $"{fileInfo.Size}b";
+        type = fileInfo.Type;
+
+        using (var ms = await file.CreateMemoryStreamAsync((int)fileInfo.Size))
+        {
+            fileStream = new MemoryStream(ms.ToArray());
+        }
+    }
+
+    async Task UploadFileAsync()
+    {
+
+        // Create the content 
+        MultipartFormDataContent content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+
+        content.Add(new StreamContent(fileStream, (int)fileStream.Length), "image", fileName);
+
+        string url = @"http://localhost:6001";
+
+        HttpResponseMessage response = await client.PostAsync($"{url}/api/images/profile", content);
+
+        if(response.IsSuccessStatusCode)
+        {
+            var uploadedFileName = await response.Content.ReadAsStringAsync();
+            imagePath = $"{url}/{uploadedFileName}";
+            loggined_user.ProfileImage = imagePath;
+            await LocalStorage.SetItem<UserModel>("token", loggined_user);
+            message = "File has been uploaded successfully!";
+        }
+    }
+}

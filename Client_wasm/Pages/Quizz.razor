@@ -1,0 +1,84 @@
+@page "/Quizz"
+
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+@inject UserModel loggined_user
+@inject QuizzModel quizz
+@inject NavigationManager NavigationManager
+
+
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+<!-- Compiled and minified JavaScript -->
+<script type="@type" suppress-error="BL9992" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+
+
+
+
+@if (Initialized && loggined_user.IsAuthorized)
+{
+    @switch (quizz.Name)
+    {
+        case "Function" :
+            <Function> </Function>
+            break;
+        default:
+            <meta http-equiv="refresh" content="1;URL=/">
+            break;
+    }
+}
+else if (Initialized && !loggined_user.IsAuthorized)
+{
+    <div class="alert alert-warning alert-dismissible fade show" style="justify-content: center; text-align: center; margin-left: auto; margin-right: auto; position: relative; display: inline-block; vertical-align: middle; align-items: center; margin-top: 20%; margin-bottom: auto;">
+        <h4 class="alert-heading"><i class="fa fa-warning"></i> Warning!</h4>
+        <p>Please Login First Then Start The QUIZZ</p>
+        <hr>
+        <p class="mb-0">Once you have logged in, click on the Start QUIZZ button to continue.</p>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+
+    <meta http-equiv="refresh" content="1;URL=/QuizzResults">
+}
+
+
+
+
+
+
+
+
+<!-- QUIZZ -->
+<link rel="stylesheet" href="http://localhost:6001/Quizz/style1.css">
+<link rel="stylesheet" href="http://localhost:6001/Quizz/style2.css">
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Quizz/style3.js" > </script>
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Quizz/style4.js"></script>
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Quizz/style5.js"></script>
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Quizz/style6.js"></script>
+<!-- QUIZZ -->
+
+
+@code
+{
+    public string type { get; set; } = "text/javascript";
+    public bool Initialized {get; set;}
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserModel temp = await LocalStorage.GetItem<UserModel>("token");
+            loggined_user.equalnew(temp);
+        }
+        catch (Exception)
+        {
+            await LocalStorage.SetItem<UserModel>("token", new UserModel());
+        }
+        loggined_user.BeforeExamScore = loggined_user.Score;
+        await LocalStorage.SetItem<UserModel>("token", loggined_user);
+        Initialized = true;
+        StateHasChanged();
+    }
+}

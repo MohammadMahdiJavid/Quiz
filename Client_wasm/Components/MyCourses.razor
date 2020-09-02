@@ -1,0 +1,66 @@
+@inject QuizzModel quizz
+@inject HttpClient client
+@inject ILocalStorage LocalStorage
+@inject NavigationManager NavigationManager
+@inject UserModel loggined_user
+
+
+@if (IsCompleted)
+{
+    <div class="row" style="@Style" >
+        <div class="col-md-7">
+            <RadzenGrid ColumnWidth="200px" AllowFiltering="true" AllowPaging="true" PageSize="2" AllowSorting="true" Data="@courses" TItem="CourseModel" Value="@course" RowSelect="@(args => {course = args; chapters = args.Chapters.Split('#', StringSplitOptions.RemoveEmptyEntries).Select(e => new Chapter(e)).ToList();})">
+                <Columns>
+                    <RadzenGridColumn Width="150px" TItem="CourseModel" Property="Name" Title="Course Name">
+                        <Template Context="course">
+                            <div>@course.Name</div>
+                            <RadzenImage Path="@course.ImagePath" style="width: 200px;"/>
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn Width="200px" TItem="CourseModel" Property="Author" Title="Author" />
+                    <RadzenGridColumn Width="100px" TItem="CourseModel" Property="TotalScore" Title="Score" />
+                </Columns>
+            </RadzenGrid>
+        </div>
+        <div class="col-md-5">
+                <button style="margin-bottom:2rem; width: 167px;" type="button" class="btn btn-warning" @onclick=@(e => {quizz.Name=course.Name; NavigationManager.NavigateTo($"/Quizz");} ) >Start Quizz</button>
+            <RadzenTabs>
+                <Tabs>
+                    <RadzenTabsItem Text="Course Details">
+                        <RadzenGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@chapters" TItem="Chapter">
+                            <Columns>
+                                <RadzenGridColumn TItem="Chapter" Property="Name" Title="Chapter Name" />
+                            </Columns>
+                        </RadzenGrid>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+@code 
+{
+    [Parameter]
+    public string Style {get; set;} = @"margin-top: 6rem; margin-left: 3rem; margin-right: -5rem;";
+    CourseModel course {get; set;} = new CourseModel();
+    List<CourseModel> courses {get; set;} = new List<CourseModel>();
+    bool IsCompleted {get; set;} = false;
+    List<Chapter> chapters = new List<Chapter>();
+    protected override async Task OnInitializedAsync()
+    {
+        string url = @"http://localhost:6001/api/courses";
+        courses = await client.GetFromJsonAsync<List<CourseModel>>(url);
+        course = courses.FirstOrDefault();
+        chapters = course.Chapters.Split('#', StringSplitOptions.RemoveEmptyEntries).Select(e => new Chapter(e)).ToList();
+        IsCompleted = true;
+        StateHasChanged();
+    }
+}        

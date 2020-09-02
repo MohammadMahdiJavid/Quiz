@@ -1,0 +1,34 @@
+@page "/profile"
+
+@inject ILocalStorage LocalStorage
+@inject NavigationManager NavigationManager
+@inject UserModel loggined_user
+
+
+@if (Initialized)
+{
+    <MyProfile>   </MyProfile>
+}
+
+
+
+@code
+{
+    public bool Initialized {get; set;} = false;
+    public string style {get; set;} = "position: relative; overflow-x: hidden; background-color: #CFD8DC; visibility: hidden;";
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserModel temp = await LocalStorage.GetItem<UserModel>("token");
+            loggined_user.equalnew(temp);
+        }
+        catch (Exception)
+        {
+            await LocalStorage.SetItem<UserModel>("token", new UserModel());
+        }
+        Initialized = true;
+        style = "position: relative; overflow-x: hidden; background-color: #CFD8DC;";
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,31 @@
+
+
+
+<div class="row">
+    <div class="col-md-11 col-sm-12 p-4">
+        <label>Smooth <RadzenCheckBox @bind-Value="@smooth" Name="smooth"></RadzenCheckBox></label>
+        <RadzenChart> 
+            <RadzenLineSeries Smooth="@smooth" Data="@this.Datas" CategoryProperty="Idx" Title="Score" ValueProperty="Score">
+                <RadzenMarkers MarkerType="MarkerType.Circle" />
+            </RadzenLineSeries>
+            <RadzenCategoryAxis Padding="20" Formatter="@Score_To_Str"/>     
+            <RadzenValueAxis Formatter="@Time"> @* // mehvare y // @*mehvare x FormatString="He" *@
+
+                <RadzenGridLines Visible="true" />
+                <RadzenAxisTitle Text="Improvement Rate" />
+            </RadzenValueAxis>
+        </RadzenChart>
+    </div>
+</div>     
+
+
+
+
+@code
+{
+    [Parameter]
+    public List<DataItem> Datas {get; set;} = new List<DataItem>();
+    public string Score_To_Str(object category) => category.ToString(); // nemodar // Formatter
+    public string Time(object value) => value.ToString(); // nemodar // Formatter
+    bool smooth = true; // male nemodar hast
+}

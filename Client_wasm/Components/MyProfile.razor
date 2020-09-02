@@ -1,0 +1,203 @@
+@using System.IO
+@using BlazorInputFile
+@using System.Linq
+
+@inject NavigationManager NavigationManager
+@inject UserModel loggined_user
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+
+
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="http://localhost:6001/Style/Profile/profile.css" rel="stylesheet" id="MyCss">
+<script type="@type" suppress-error="BL9992" src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script type="@type" suppress-error="BL9992" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+@if (Initialized && loggined_user.IsAuthorized)
+{
+    <div class="container emp-profile">
+        <form method="post">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="profile-img">
+                        @if (loggined_user.ProfileImage is null)
+                        {
+                            <img src="http://localhost:6001/Style/Profile/profile4.png" alt="Your Photo"/>
+                        }
+                        else
+                        {
+                            <img src="@loggined_user.ProfileImage" alt="Your Photo"/>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="profile-head">
+                                <h5>
+                                    @loggined_user.Name
+                                </h5>
+                                <h6>
+                                    @loggined_user.Profession
+                                </h6>
+                                @* <p class="proile-rating">Total Score : <span>@loggined_user.Score</span></p> *@
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a style="color: darkred;" class="nav-link active" id="home-tab" data-toggle="tab" href="" role="tab" aria-controls="home" aria-selected="true">About</a>
+                            </li>
+                            <a href="/QuizzResults">
+                                <li class="nav-item">
+                                    <a style="color: darkred;" class="nav-link" href="/QuizzResults" role="tab" >Score Results</a>
+                                </li>
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <input @onclick=@ChangeProfile type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    @* <div class="file btn btn-lg btn-primary">
+                        Change Photo
+                        <input type="file" name="file"/>
+                    </div> *@
+                    <div class="profile-work">
+                        <p>Courses</p>
+                        @foreach (string course in this.Courses)
+                        {
+                            <a href="/courses/@course"> @course </a><br/>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="tab-content profile-tab" id="myTabContent">
+                        @* ABOUT *@
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>User Id</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>@loggined_user.Id</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Name</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>@loggined_user.Name</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Email</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>@loggined_user.Email</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Phone</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>@loggined_user.Phone</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Profession</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>@loggined_user.Profession</p>
+                                        </div>
+                                    </div>
+                        </div>
+                        @* ABOUT *@
+                        @* Change Photo *@
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Experience</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Expert</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Hourly Rate</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>10$/hr</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Total Projects</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>230</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>English Level</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Expert</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Availability</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>6 months</p>
+                                        </div>
+                                    </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Your Bio</label><br/>
+                                    <p>Your detail description</p>
+                                </div>
+                            </div>
+                        </div>
+                        @* Change Photo *@
+                    </div>
+                </div>
+            </div>
+        </form>           
+    </div>
+}
+else if (Initialized && !loggined_user.IsAuthorized)
+{
+    <p style="visibility: hidden;"> @ChangeDirection() </p>
+}
+
+@code
+{
+    List <string> Courses = new List<string>();
+    protected override async Task OnInitializedAsync()
+    {
+        if (loggined_user.Courses != null)
+        {
+            Courses = loggined_user.Courses.Split('#').ToList();
+        }
+        UserModel temp = await LocalStorage.GetItem<UserModel>("token");
+        loggined_user.equalnew(temp);
+        Initialized = true;
+        StateHasChanged();
+    }
+    public string type { get; set; } = "text/javascript";
+    public bool Initialized {get; set;} = false;
+    public int ChangeDirection()
+    {
+        NavigationManager.NavigateTo("/signin"); 
+        return 1;
+    }
+    public void ChangeProfile() => NavigationManager.NavigateTo("/changeprofile");
+}

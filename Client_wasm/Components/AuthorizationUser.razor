@@ -1,0 +1,19 @@
+@page "/AuthorizationUser"
+@inject ILocalStorage LocalStorage
+@inject UserModel loggined_user
+
+<p style="visibility: hidden;"> AUTHORIZATION IS WORKING </p>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        UserModel tmp = LocalStorage.GetItem<UserModel>("token").Result;
+        (loggined_user.Email, loggined_user.Password, loggined_user.BackupQuestion, loggined_user.BackupAnswer, 
+        loggined_user.Id, loggined_user.ProfileImage, loggined_user.IsAuthorized, loggined_user.Name, loggined_user.LastName,
+        loggined_user.About, loggined_user.Courses, loggined_user.Phone, loggined_user.Profession, loggined_user.Websites, loggined_user.Skills, loggined_user.Score ) = 
+        (tmp.Email, tmp.Password, tmp.BackupQuestion, tmp.BackupAnswer,
+            tmp.Id, tmp.ProfileImage, tmp.IsAuthorized, tmp.Name, tmp.LastName,
+            tmp.About, tmp.Courses, tmp.Phone, tmp.Profession, tmp.Websites, tmp.Skills, tmp.Score);
+    }
+}

@@ -1,0 +1,86 @@
+@page "/SideBar"
+
+
+
+<div id="wrapper" class="@this.toggled">
+    <nav
+        class="navbar navbar-inverse fixed-top"
+        id="sidebar-wrapper"
+        role="navigation"
+        style="margin-top: 5rem;"
+    >
+        <ul class="nav sidebar-nav">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+            <a href="">Courses</a>
+            </div>
+        </div>
+        <li class="dropdown">
+            <a href="/courses/function" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-tasks" aria-hidden="true"> Function</i> <span class="caret"></span></a>
+            <ul class="dropdown-menu animated fadeInLeft" role="menu">
+            <div class="dropdown-header"><a href="/courses/function/lambda"><i class="fa fa-tasks" aria-hidden="true"> Intro</i></a></div>
+            <div class="dropdown-header"><a href="/courses/function/lambda"><i class="fa fa-tasks" aria-hidden="true"> Lambda</i></a></div>
+            <div class="dropdown-header"><a href="/courses/function/lambda"><i class="fa fa-tasks" aria-hidden="true"> Decorators</i></a></div>
+            </ul>
+        </li>
+        <li><a href="/courses/regex"><i class="far fa-file"> Regex</i></a></li>
+        <li><a href="/courses/numpy"><i class='fas fa-calculator'> Numpy</i></a></li>
+        <li><a href="/courses/networkx"><i class="fas fa-network-wired"> NetworkX</i></a></li>
+        <li class="dropdown">
+            <a href="/courses/plot" class="dropdown-toggle" data-toggle="dropdown"
+            ><i class="fa fa-bar-chart"> Plotting</i><span class="caret"></span
+            ></a>
+            <ul class="dropdown-menu animated fadeInLeft" role="menu">
+            <div class="dropdown-header"><a href="/courses/plot/matplotlib"><i class="fa fa-bar-chart"> MatPlotLib</i></a></div>
+            </ul>
+        </li>
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+        
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <button
+        type="button"
+        class= "@this.is_open"
+        data-toggle="offcanvas"
+        style="margin-left: 4rem; margin-top: 5rem;"
+        @onclick="@(e => sidebar_change())"
+        >
+        <span class="hamb-top" style="color: darkred; background-color: darkred;"></span>
+        <span class="hamb-middle" style="color: darkred; background-color: darkred;"></span>
+        <span class="hamb-bottom" style="color: darkred; background-color: darkred;"></span>
+        </button>
+    </div>
+    <!-- /#page-content-wrapper -->
+</div>
+
+<MyCourses Style="@Style">  </MyCourses>
+
+
+
+
+
+
+@code
+{
+    public string Style {get; set;} = "margin-top: 6rem; margin-left: 3rem; margin-right: -5rem;";
+    public string is_open {get; set;} = "hamburger animated fadeInLeft is-closed";
+    public string toggled {get; set;} = "";
+    public void sidebar_change()
+    {
+        if ((this.is_open == "hamburger animated fadeInLeft is-closed") && (this.toggled == ""))
+        {
+            Style = "margin-top: 11rem; margin-left: 17rem; margin-right: -5rem;";
+            this.is_open = "hamburger animated fadeInLeft is-open";
+            this.toggled = "toggled";
+        }
+        else
+        {
+            Style = "margin-top: 6rem; margin-left: 3rem; margin-right: -5rem;";
+            this.is_open = "hamburger animated fadeInLeft is-closed";
+            this.toggled = "";
+        }
+    }
+}

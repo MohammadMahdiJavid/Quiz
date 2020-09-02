@@ -1,0 +1,120 @@
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+
+
+
+
+<div class="input-group">
+    <section>
+        <div class="p-3 mb-2 bg-dark text-white" style="margin-bottom: 3rem;">
+            <h3 style="margin-bottom: 1rem;">@QuizzQuestion.Question</h3>
+            <p>
+                <label>
+                    <input class="filled-in" type="checkbox" @onchange="@((eventArgs) => SetAnswer1(eventArgs))"  />
+                    <span style="color: white; font-size: large;"> @Choices[0] </span>
+                </label>
+            </p>            
+            <p>
+                <label>
+                    <input class="filled-in" type="checkbox" @onchange="@((eventArgs) => SetAnswer2(eventArgs))" />
+                    <span style="color: white; font-size: large;"> @Choices[1] </span>
+                </label>
+            </p>            
+            <p>
+                <label>
+                    <input class="filled-in" type="checkbox" @onchange="@((eventArgs) => SetAnswer3(eventArgs))" />
+                    <span style="color: white; font-size: large;"> @Choices[2] </span>
+                </label>
+            </p>            
+            <p>
+                <label>
+                    <input class="filled-in" type="checkbox" @onchange="@((eventArgs) => SetAnswer4(eventArgs))" />
+                    <span style="color: white; font-size: large;"> @Choices[3] </span>
+                </label>
+            </p>
+        </div>
+    </section>
+</div>
+
+
+
+<script type="@type" suppress-error="BL9992" src="http://localhost:6001/Quizz/OneCheckBox.js"></script>
+
+
+@code
+{
+    [Parameter]
+    public QuizzModel QuizzQuestion { get; set; } = new QuizzModel();
+    Dictionary<string, bool> result {get; set;} = new Dictionary<string, bool>() {
+            {"choice1", false} ,
+            {"choice2", false} ,
+            {"choice3", false} ,
+            {"choice4", false}
+    };
+    public string type { get; set; } = "text/javascript";
+    public string[] Choices { get; set; }
+    protected override void OnInitialized()
+    {
+        Choices = QuizzQuestion.Choices.Split('#').ToArray();
+    }
+    public object Sync {get; set;} = new Object();
+    public string SendResult()
+    {
+        lock (this.Sync)
+        {
+            string answer = "#";
+            int counter = 0;
+            foreach (string key in result.Keys)
+            {
+                if (result[key])
+                {
+                    answer += $"{counter}#";
+                    counter ++;
+                }
+            }
+            return answer;
+        }
+    }
+    object Sync2 {get; set;} = new Object();
+    List<QuizzModel> temp {get; set;}
+    public async Task SetAnswer1(ChangeEventArgs IsChecked)
+    {
+        result["choice1"] = (bool)IsChecked.Value;
+        temp = await LocalStorage.GetItem<List<QuizzModel>>("quizz");
+        temp.Remove(QuizzQuestion);
+        QuizzQuestion.UserAnswerIndex = SendResult();
+        temp.Add(QuizzQuestion);
+        await LocalStorage.SetItem<List<QuizzModel>>("quizz", temp);
+        StateHasChanged();
+    }
+    public async Task SetAnswer2(ChangeEventArgs IsChecked)
+    {
+        result["choice2"] = (bool)IsChecked.Value;
+        temp = await LocalStorage.GetItem<List<QuizzModel>>("quizz");
+        temp.Remove(QuizzQuestion);
+        QuizzQuestion.UserAnswerIndex = SendResult();
+        temp.Add(QuizzQuestion);
+        await LocalStorage.SetItem<List<QuizzModel>>("quizz", temp);
+        StateHasChanged();
+    }    
+    public async Task SetAnswer3(ChangeEventArgs IsChecked)
+    {
+        result["choice3"] = (bool)IsChecked.Value;
+        temp = await LocalStorage.GetItem<List<QuizzModel>>("quizz");
+        temp.Remove(QuizzQuestion);
+        QuizzQuestion.UserAnswerIndex = SendResult();
+        temp.Add(QuizzQuestion);
+        await LocalStorage.SetItem<List<QuizzModel>>("quizz", temp);
+        StateHasChanged();
+    }
+    public async Task SetAnswer4(ChangeEventArgs IsChecked)
+    {
+        result["choice4"] = (bool)IsChecked.Value;
+        temp = await LocalStorage.GetItem<List<QuizzModel>>("quizz");
+        temp.Remove(QuizzQuestion);
+        QuizzQuestion.UserAnswerIndex = SendResult();
+        temp.Add(QuizzQuestion);
+        await LocalStorage.SetItem<List<QuizzModel>>("quizz", temp);
+        StateHasChanged();
+    }
+}

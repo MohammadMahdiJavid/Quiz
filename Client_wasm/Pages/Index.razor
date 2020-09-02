@@ -1,0 +1,42 @@
+@page "/"
+@inject NavigationManager NavigationManager
+@inject UserModel loggined_user
+@inject ILocalStorage LocalStorage
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+@if (this.Initialized)
+{
+    <div class="index" style="overflow-x: hidden; background-color: #818c91; margin-bottom: 7rem; margin-right: 1rem;st">
+        <UpperNavBar>   </UpperNavBar>
+
+        <MySideBar>  </MySideBar>
+    </div>
+}
+
+
+
+
+
+
+@code
+{
+    public bool Initialized {get; set;} = false;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserModel temp = await LocalStorage.GetItem<UserModel>("token");
+            loggined_user.equalnew(temp);
+        }
+        catch (Exception)
+        {
+            await LocalStorage.SetItem<UserModel>("token", new UserModel());
+        }
+        Initialized = true;
+        StateHasChanged();
+    }
+}

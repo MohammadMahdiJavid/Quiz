@@ -1,0 +1,58 @@
+@page "/QuizzResults"
+
+@inject ISessionStorage SessionStorage
+@inject ILocalStorage LocalStorage
+@inject UserModel loggined_user
+@inject QuizzModel quizz
+@inject NavigationManager NavigationManager
+@inject HttpClient client
+
+
+@if (Initialized)
+{
+    <div class="container" style="margin-bottom: 7rem;">
+        <div class="row">
+            <h1 style="margin-left: 5%; color: white; justify-content: center; text-align: center; justify-content: center; align-items: center; justify-content: center; justify-items: center; text-align: center; text-align: center; justify-content: center; align-items: center; justify-content: center; justify-items: center; flex-direction: column; justify-content: center; justify-self: center; justify-items: center; ">
+                Your Score Is :
+            </h1>
+        </div>
+        <div class="row" style="color: red; font-size: xxx-large; text-align: center; text-align: center; justify-content: center; align-items: center; justify-content: center; justify-items: center;">
+            <center>@this.Datas.LastOrDefault().Score</center>
+        </div>
+        <div class="row">
+            <div class="col-md-11 col-sm-12 p-4" style="margin-top: 3%;">
+                <RadzenTabs>
+                    <Tabs>
+                        <RadzenTabsItem Text="Chart">
+                            <MyChart Datas="@this.Datas"></MyChart>
+                        </RadzenTabsItem>                                
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code
+{
+    string url {get; set;} = @"http://localhost:6001/api/quizz/EndQuizz";
+    public bool Initialized {get; set;}
+    public List<DataItem> Datas {get; set;} = new List<DataItem>();
+    protected override void OnInitialized()
+    {
+        Task<UserModel> temp =  LocalStorage.GetItem<UserModel>("token").AsTask();
+        string Data;
+        temp.ContinueWith(t => 
+            {
+                Data = t.Result.Scores;
+                int counter = 0;
+                Datas = Data.Split('#', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(e =>    {counter ++;
+                                            return new DataItem(int.Parse(e), counter);}).ToList();
+                Initialized = true;
+                StateHasChanged();
+            });
+    }
+}

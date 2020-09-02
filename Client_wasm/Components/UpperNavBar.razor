@@ -1,0 +1,66 @@
+@page "/UpperNavBar"
+@inject NavigationManager NavigationManager
+@inject UserModel loggined_user
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+
+        <img src="./logo.png" alt="Python" width="60" height="60" style="margin-left: -10rem;">
+        <a class="navbar-brand" style="height: 2rem; width: 2rem; margin-left: 3rem;" href="/">Pythonista</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+                    
+            <ul class="navbar-nav ml-lg-auto">
+                <li class="nav-item">
+                    <a href="/" class="nav-link smoothScroll"><i class="fa fa-home"> Home</i></a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/profile" class="nav-link smoothScroll"><i class="fa fa-user-circle-o"> Profile</i></a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/courses" class="nav-link smoothScroll"><i class="fa fa-book"> Courses</i></a>
+                </li>
+
+                @* <li class="nav-item">
+                    <a href="https://calendly.com/mahdijavid" class="nav-link smoothScroll"><i class="fa fa-calendar"> Schedules</i></a>
+                </li> *@
+
+                <li class="nav-item">
+                    <a href="/contact" class="nav-link smoothScroll"><i class="fa fa-phone-square"> Contact</i></a>
+                </li>
+            </ul>
+
+            <ul class="social-icon ml-lg-3">
+                <li><a href="https://www.linkedin.com/in/mohammad-mahdi-javid/"><i style="color: darkgoldenrod;" class="fa fa-linkedin-square"></i></a></li>
+                <li><a href="mailto:mahdijavid1380@yahoo.com" style="color: darkgoldenrod;"><i class="fa fa-envelope-o"></i></a></li>
+                <!-- <li><a href="https://fb.com/tooplate" class="fa fa-facebook"></a></li> -->
+                <!-- <li><a href="#" class="fa fa-twitter"></a></li> -->
+                <li><a href="https://www.instagram.com/mmahdi.javid/" style="color: darkgoldenrod;" class="fa fa-instagram"></a></li>
+                @if (! @loggined_user.IsAuthorized)
+                {
+                    <li><button style="font-size:24px; color: darkslategrey;"><a href="/signin" style="color: darkred;">Sign in</a><i class="fa fa-sign-in"></i></button></li>
+                }
+                else
+                {
+                    <li><button style="font-size:24px; color: darkslategrey;"><a href="/logout" style="color: darkred;">Log Out</a><i class="fa fa-sign-in"></i></button></li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        StateHasChanged();
+    }
+}

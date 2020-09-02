@@ -1,0 +1,54 @@
+@page "/logout"
+
+@inject ILocalStorage LocalStorage
+@inject NavigationManager NavigationManager
+@inject HttpClient client
+@inject UserModel loggined_user
+
+
+<style>
+    body
+    {
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+</style>
+
+@if (@loggined_user.IsAuthorized)
+{
+    <style>
+        body 
+        {
+            background-image: url('http://localhost:6001/Style/Logout/logout.jpg');
+        }
+    </style>
+}
+else
+{
+    <style>
+        body 
+        {
+            background-image: url('http://localhost:6001/Style/Logout/redirect_url_big.jpg');
+        }
+    </style>
+}
+<p style="visibility:hidden">@GoHome()</p>
+<meta http-equiv="refresh" content="2;URL=/">
+
+
+
+
+
+
+
+
+@code
+{
+    public async Task<int> GoHome ()
+    {
+        loggined_user.equalnew(new UserModel());
+        await LocalStorage.RemoveItem("token");
+        await LocalStorage.SetItem<UserModel>("token", new UserModel());
+        return 1;
+    }
+}
